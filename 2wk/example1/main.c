@@ -1,6 +1,8 @@
 #include <stdio.h>
 
-int main(void) {
-    int r = 3+4;
-        return 0;
+
+int main() {
+    int a = 3, b = 4;
+    printf("%d + %d = %d\n", a, b, a + b);
+    return 0;
 }

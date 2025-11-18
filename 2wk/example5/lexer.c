@@ -2,6 +2,7 @@
 #include <string.h>
 #include "lexer.h"
 
+// laxer_next()가 한 글자씩 읽으면서 DFA 규칙대로 토큰 만듦
 static Token make(TokenType t, const char* s, int len, long long v) {
     Token tk = { t, s, len, v }; return tk;
 }
@@ -87,6 +88,6 @@ Token lexer_next(Lexer* lx) {
     case ';': return make(T_SEMI, s, 1, 0);
     case '(': return make(T_LPAREN, s, 1, 0);
     case ')': return make(T_RPAREN, s, 1, 0);
-    default:  return make(T_EOF, s, 1, 0); // �ܼ� ���� ó��
+    default:  return make(T_EOF, s, 1, 0); // �ܼ� ���� ó��
     }
 }

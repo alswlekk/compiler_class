@@ -1,6 +1,6 @@
 #ifndef TOKEN_H
 #define TOKEN_H
-
+// 토큰 종류(enum)와 토큰 구조체 정의
 typedef enum {
     T_EOF = 0,
     T_IDENT,     // [a-zA-Z_][a-zA-Z0-9_]*

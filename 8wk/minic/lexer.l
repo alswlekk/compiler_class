@@ -35,7 +35,7 @@
 "return"                          { return RETURN; }
 
 "=="                              { return EQ; }
-"!="                              { return NE; }
+"!="                              { return NE; } 
 "<="                              { return LE; }
 ">="                              { return GE; }
 "&&"                              { return AND; }

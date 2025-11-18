@@ -7,20 +7,24 @@
 int yylex(void);
 void yyerror(const char *s);
 
-/* --- 심볼테이블(아주 단순) --- */
+/* --- 심볼테이블(실수형 버전) --- */
 typedef struct Sym {
   char *name;
-  int   value;
+  double   value;
   struct Sym *next;
 } Sym;
+
 static Sym *symtab = NULL;
+
+/* show문 여부 플래그 */
+int show_mode = 0;
 
 static Sym* lookup(const char *name){
   for (Sym *p = symtab; p; p = p->next)
     if (strcmp(p->name, name) == 0) return p;
   return NULL;
 }
-static int getval(const char *name){
+static double getval(const char *name){
   Sym *s = lookup(name);
   if (!s) {
     fprintf(stderr, "undefined variable: %s\n", name);
@@ -28,7 +32,8 @@ static int getval(const char *name){
   }
   return s->value;
 }
-static void setval(const char *name, int v){
+
+static void setval(const char *name, double v){
   Sym *s = lookup(name);
   if (!s) {
     s = (Sym*)malloc(sizeof(Sym));
@@ -41,17 +46,19 @@ static void setval(const char *name, int v){
 %}
 
 /* --- 토큰/타입 --- */
-%union { int ival; char *sval; }
+%union { double dval; char *sval; }
 
-%token <ival> T_NUMBER
+%token <dval> T_NUMBER
 %token <sval> T_ID
-%token        T_PRINT
+%token        T_SHOW 
+%token        T_END 
 
 %left '+' '-'
 %left '*' '/' '%'
 %right UMINUS
+%nonassoc '(' ')' 
 
-%type <ival> expr stmt
+%type <dval> expr stmt
 %start input
 
 %%
@@ -63,22 +70,35 @@ input
   ;
 
 line
-  : stmt '\n'              { printf("%d\n", $1); }
-  | '\n'                   { /* 빈 줄 무시 */ }
-  | error '\n'             { yyerrok; /* 에러 줄 스킵 */ }
+  : stmt T_END              {
+     if (!show_mode)           /* show문이 아닐 때만 출력 */
+        printf("%g\n", $1);
+      show_mode = 0;            /* 다음 문장 위해 초기화 */
+     }
+  | T_END                   { /* 빈 줄 무시 */ }
+  | error T_END             { yyerrok; /* 에러 줄 스킵 */ }
   ;
 
 stmt
   : expr                   { $$ = $1; }
   | T_ID '=' expr          { setval($1, $3); $$ = $3; free($1); }
-  | T_PRINT expr           { $$ = $2; }  /* print도 값 출력(line에서 일괄 출력) */
+  | T_SHOW expr { 
+    extern char current_expr[];   /* scanner.l에 선언된 전역 변수 사용 */
+    show_mode = 1;
+    printf("%s = %g\n", current_expr, $2); 
+    $$ = $2; 
+  }
   ;
 
 expr
   : expr '+' expr          { $$ = $1 + $3; }
   | expr '-' expr          { $$ = $1 - $3; }
   | expr '*' expr          { $$ = $1 * $3; }
-  | expr '%' expr          { if ($3 == 0) { yyerror("mod by zero");       $$ = 0; } else $$ = $1 % $3; }
+  | expr '/' expr            { if ($3 == 0) { yyerror("division by zero"); $$ = 0; } else $$ = $1 / $3; } // 나눗셈 기능 추가
+  | expr '%' expr { 
+    if ((int)$3 == 0) { yyerror("mod by zero"); $$ = 0; } 
+    else $$ = (int)$1 % (int)$3; 
+}
   | '-' expr %prec UMINUS  { $$ = -$2; }
   | '(' expr ')'           { $$ = $2; }
   | T_NUMBER               { $$ = $1; }

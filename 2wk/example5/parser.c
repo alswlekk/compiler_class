@@ -54,7 +54,7 @@ static AST* parse_factor(Parser* ps) {
     if (ps->cur.type == T_LPAREN) {
         advance(ps);
         AST* e = parse_exp(ps);
-        expect(ps, T_RPAREN, "´Ý´Â °ýÈ£ ')'°¡ ÇÊ¿äÇÕ´Ï´Ù.");
+        expect(ps, T_RPAREN, "ï¿½Ý´ï¿½ ï¿½ï¿½È£ ')'ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Õ´Ï´ï¿½.");
         return e;
     }
     if (ps->cur.type == T_IDENT) {
@@ -65,7 +65,7 @@ static AST* parse_factor(Parser* ps) {
         Token t = ps->cur; advance(ps);
         return parse_number_token(t);
     }
-    fprintf(stderr, "[SyntaxError] factor¸¦ ±â´ëÇßÀ¸³ª ÅäÅ« Å¸ÀÔ=%d\n", ps->cur.type);
+    fprintf(stderr, "[SyntaxError] factorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å« Å¸ï¿½ï¿½=%d\n", ps->cur.type);
     exit(1);
 }
 
@@ -79,19 +79,19 @@ static AST* parse_exp(Parser* ps) {
 AST* parse_assign(Parser* ps) {
     // ident '=' exp ';'
     if (ps->cur.type != T_IDENT) {
-        fprintf(stderr, "[SyntaxError] ´ëÀÔ¹®ÀÇ ÁÂº¯ ½Äº°ÀÚ°¡ ÇÊ¿äÇÕ´Ï´Ù.\n");
+        fprintf(stderr, "[SyntaxError] ï¿½ï¿½ï¿½Ô¹ï¿½ï¿½ï¿½ ï¿½Âºï¿½ ï¿½Äºï¿½ï¿½Ú°ï¿½ ï¿½Ê¿ï¿½ï¿½Õ´Ï´ï¿½.\n");
         exit(1);
     }
     Token id = ps->cur; advance(ps);
     char* lhs_name = (char*)malloc(id.length + 1);
     memcpy(lhs_name, id.lexeme, id.length); lhs_name[id.length] = '\0';
 
-    expect(ps, T_ASSIGN, "'='ÀÌ ÇÊ¿äÇÕ´Ï´Ù.");
+    expect(ps, T_ASSIGN, "'='ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Õ´Ï´ï¿½.");
 
     AST* rhs = parse_exp(ps);
-    expect(ps, T_SEMI, "';'ÀÌ ÇÊ¿äÇÕ´Ï´Ù.");
+    expect(ps, T_SEMI, "';'ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Õ´Ï´ï¿½.");
 
     AST* assign = ast_new(N_ASSIGN, NULL, rhs);
-    assign->name = lhs_name; // ÁÂº¯ ÀÌ¸§
+    assign->name = lhs_name; // ï¿½Âºï¿½ ï¿½Ì¸ï¿½
     return assign;
 }

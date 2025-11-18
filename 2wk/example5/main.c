@@ -15,16 +15,16 @@ int main(int argc, char** argv) {
     const char* src = argv[1];
 
     Parser ps;
-    parser_init(&ps, src);
-    AST* root = parse_assign(&ps);
+    parser_init(&ps, src); // 파서, 렉서 초기화
+    AST* root = parse_assign(&ps); // 파싱 시작
 
     printf("[OK] Parsed assignment.\n");
 
     printf("POSTFIX: ");
-    ast_print_postfix(root); printf("\n");
+    ast_print_postfix(root); printf("\n"); // 성공 시 후위표기 출력
 
     printf("TAC:\n");
-    gen_tac(root, root->name);
+    gen_tac(root, root->name); // 3-주소 코드(TAC) 출력
 
     ast_free(root);
     return 0;
